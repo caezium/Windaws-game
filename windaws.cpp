@@ -8,15 +8,26 @@ string inputstr;
 string username="NULL";
 
 string osname("Windaws");
-bool osver=0.1;
+float osver=0.1;
+int osverd=1;
+
+bool instantdisplay=false;
+
+
+long long board[4][4],p1,p2,turn,won;
+bool multi;
 
 void desktop();
 void displaytext(string t,double delay,bool end){
 	int i=0;
-	while (t[i]!='\0'){
-		cout<<t[i];
-		usleep(1000000*delay);
-		i++;
+	if(instantdisplay){
+		cout<<t;
+	}else{
+		while(t[i]!='\0'){
+			cout<<t[i];
+			usleep(1000000*delay);
+			i++;
+		}
 	}
 	if(end)cout<<endl;
 }
@@ -60,7 +71,6 @@ void startos(){
 	}
 	spincirc(0.05,4);
 	sleep(2);
-	displaytext("\nWelcome",0.05,true);
 	sleep(3);
 	system("CLS");
 }
@@ -79,6 +89,7 @@ void settings(){
 	displaytext("|SETTINGS|",0.05,true);
 	displaytext("1 - username",0.01,true);
 	displaytext("2 - color",0.01,true);
+	displaytext("3 - instant display mode",0.01,true);
 	displaytext("? - exit",0.01,true);
 	cin>>inputint;
 	system("CLS");
@@ -127,6 +138,26 @@ void settings(){
 		else if(inputint==14)system("Color 0E");
 		else if(inputint==15)system("Color 0F");
 		sleep(1);
+		displaytext("exiting",0.03,false);
+		sleep(1);
+		settings();
+	}else if(inputint==3){
+		displaytext("instant display mode displays text instantly",0.02,true);
+		displaytext("0 - turn off",0.01,true);
+		displaytext("1 - turn on",0.01,true);
+		displaytext("? - exit",0.01,true);
+		cin>>inputint;
+		if(inputint==0){
+			instantdisplay=false;
+			displaytext("instant display mode turned off",0.01,true);
+			sleep(1);
+		}else if(inputint==1){
+			instantdisplay=true;
+			displaytext("instant display mode turned on",0.01,true);
+			sleep(1);
+		}
+		sleep(1);
+		system("CLS");
 		displaytext("exiting",0.03,false);
 		sleep(1);
 		settings();
@@ -182,21 +213,130 @@ void nmg(){
 }
 void updatelogs(){
 	system("CLS");
-	displaytext("current "+osname+" version: "+to_string(osver),0.02,true);
+	displaytext("current "+osname+" version: "+to_string(osver)+"."+to_string(osverd),0.02,true);
 	displaytext("loading update logs...",0.02,false);
 	sleep(1);
 	spincirc(0.1,2);
 	system("CLS");
-	cout<<"current "+osname+" version: "+to_string(osver)<<endl;
+	cout<<"current "+osname+" version: "+to_string(osver)+"."+to_string(osverd)<<endl;
 	cout<<"update logs loaded!";
 	sleep(1);
 	system("CLS");
-	cout<<"current "+osname+" version: "+to_string(osver)<<endl;
-	cout<<"version 0.1"<<endl<<"-release\n-number memorising game\n-settings with color and username change"<<endl;
+	cout<<"current "+osname+" version: "+to_string(osver)+"."+to_string(osverd)<<endl;
+	cout<<"version 0.1.1"<<endl<<"-tic tac toe\n-settings with instant display mode\n-bug fixes"<<endl<<endl;
+	cout<<"version 0.1"<<endl<<"-release\n-number memorising game\n-settings with color change and username change"<<endl;
 	displaytext("? - exit",0.01,true);
 	cin>>inputint;
 	system("CLS");
 	displaytext("exiting",0.01,false);
+}
+void gallery(){
+	displaytext("? - exit",0.01,true);
+	displaytext("coming soon",0.01,true);
+	cin>>inputint;
+	sleep(2);
+	system("CLS");
+}
+void drawboard(){
+	system("CLS");
+	displaytext("     |     |     ",0.001,true);
+	for(int i=1;i<=3;i++){
+		displaytext("  ",0.001,false);
+		if(board[1][i]==1)displaytext("X",0.001,false);
+		else if(board[1][i]==2)displaytext("O",0.001,false);
+		else displaytext(" ",0.001,false);
+		if(i!=3)displaytext("  |",0.001,false);
+		else displaytext("   ",0.001,false);	
+	}
+	cout<<endl;
+	displaytext("-----|-----|-----",0.001,true);
+	for(int i=1;i<=3;i++){
+		displaytext("  ",0.001,false);
+		if(board[2][i]==1)displaytext("X",0.001,false);
+		else if(board[2][i]==2)displaytext("O",0.001,false);
+		else displaytext(" ",0.001,false);
+		if(i!=3)displaytext("  |",0.001,false);
+		else displaytext("   ",0.001,false);	
+	}
+	cout<<endl;
+	displaytext("     |     |     ",0.001,true);
+	displaytext("-----|-----|-----",0.001,true);
+	for(int i=1;i<=3;i++){
+		displaytext("  ",0.001,false);
+		if(board[3][i]==1)displaytext("X",0.001,false);
+		else if(board[3][i]==2)displaytext("O",0.001,false);
+		else displaytext(" ",0.001,false);
+		if(i!=3)displaytext("  |",0.001,false);
+		else displaytext("   ",0.001,false);	
+	}
+	cout<<endl;
+	displaytext("     |     |     ",0.001,true);
+}
+bool boardcheck(){
+	for(int i=1;i<=3;i++){
+		if(board[i][1]==board[i][2]&&board[i][1]==board[i][3]&&board[i][1]!=0){
+			won=board[i][1];
+			return true;
+		}
+	}
+	for(int i=1;i<=3;i++){
+		if(board[1][i]==board[2][i]&&board[i][1]==board[3][i]&&board[1][i]!=0){
+			won=board[3][i];
+			return true;
+		}
+	}
+	if(board[1][1]==board[2][2]&&board[1][1]==board[3][3]&&board[1][1]!=0){
+			won=board[1][1];
+			return true;
+	}
+	if(board[1][3]==board[2][2]&&board[1][3]==board[3][1]&&board[1][3]!=0){
+			won=board[1][3];
+			return true;
+	}
+	return false;
+}
+void ttt(){
+	spincirc(0.01,3);
+	drawboard();
+	while(!boardcheck()){
+		turn=1;
+		displaytext("|PLAYER ONE|\nenter column number -> ",0.001,false);
+		cin>>p1;
+		displaytext("|PLAYER ONE|\nenter row number -> ",0.001,false);
+		cin>>p2;
+		while(board[p2][p1]!=0||p1>3||p2>3){
+			displaytext("|PLAYER ONE|\n invalid position",0.001,true);
+			displaytext("|PLAYER ONE|\nenter column number -> ",0.001,false);
+			cin>>p1;
+			displaytext("|PLAYER ONE|\nenter row number -> ",0.001,false);
+			cin>>p2;
+		}
+		board[p2][p1]=turn;
+		drawboard();
+		if(boardcheck())break;
+		turn=2;
+		displaytext("|PLAYER TWO|\nenter column number -> ",0.001,false);
+		cin>>p1;
+		displaytext("|PLAYER TWO|\nenter row number -> ",0.001,false);
+		cin>>p2;
+		while(board[p2][p1]!=0||p1>3||p2>3){
+			displaytext("|PLAYER TWO|\n invalid position",0.001,true);
+			displaytext("|PLAYER TWO|\nenter column number -> ",0.001,false);
+			cin>>p1;
+			displaytext("|PLAYER TWO|\nenter row number -> ",0.001,false);
+			cin>>p2;
+		}
+		board[p2][p1]=turn;
+		drawboard();
+	}
+	if(won==1){
+		displaytext("PLAYER ONE WINS",0.01,true);
+	}else{
+		displaytext("PLAYER TWO WINS",0.01,true);
+	}
+	sleep(1);
+	displaytext("exiting",0.01,true);
+	sleep(2);
 }
 void desktop(){
 	system("CLS");
@@ -204,6 +344,8 @@ void desktop(){
 	displaytext("1 - settings",0.01,true);
 	displaytext("2 - number memory game",0.01,true);
 	displaytext("3 - "+osname+" update logs",0.01,true);
+	displaytext("4 - photo gallery",0.01,true);
+	displaytext("5 - tic tac toe",0.01,true);
 	displaytext("? - restart/shutdown",0.01,true);
 	cin>>inputint;
 	system("CLS");
@@ -219,6 +361,16 @@ void desktop(){
 		desktop();
 	}else if(inputint==3){
 		updatelogs();
+		sleep(1);
+		system("CLS");
+		desktop();
+	}else if(inputint==4){
+		gallery();
+		sleep(1);
+		system("CLS");
+		desktop();
+	}else if(inputint==5){
+		ttt();
 		sleep(1);
 		system("CLS");
 		desktop();
