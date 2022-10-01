@@ -14,6 +14,7 @@ int osverd=1;
 bool instantdisplay=false;
 
 
+
 long long board[4][4],p1,p2,turn,won;
 bool multi;
 
